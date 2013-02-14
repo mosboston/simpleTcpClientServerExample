@@ -3,14 +3,15 @@
 
 #define RECONNECT_TIME 400
 
-bool	sendHelloButton = false;
+bool	sendResetButton = false;
 bool	sendNewVisitorButton = false;
 bool	sendStatusButton = false;
+bool	sendSetInactivityButton = false;
 
 
 //--------------------------------------------------------------
 void testApp::setup(){
-	// we don't want to be running to fast
+	// we don't want to be running too fast
 	ofSetVerticalSync(true);
 
 	//some variables:
@@ -26,7 +27,7 @@ void testApp::setup(){
 
 	//are we connected to the server - if this fails we
 	//will check every few seconds to see if the server exists
-	weConnected = tcpClient.setup("192.168.1.108", 11999);
+	weConnected = tcpClient.setup("127.0.0.1", 11999);
 	//optionally set the delimiter to something else.  The delimter in the client and the server have to be the same
 	tcpClient.setMessageDelimiter("\n");
 	//tcpClient.setMessageDelimiter(";");
@@ -37,9 +38,11 @@ void testApp::setup(){
 	tcpClient.setVerbose(true);
 
 
-	gui.addButton("Send Hello", sendHelloButton);
-	gui.addButton("Send NewVisitor", sendNewVisitorButton);
-	gui.addButton("Send Status", sendStatusButton);
+	gui.addButton("Send RESET", sendResetButton);
+	gui.addButton("Send RECORD", sendNewVisitorButton);
+	gui.addButton("Send STATUS", sendStatusButton);
+    gui.addButton("Send SET INACTIVITY", sendSetInactivityButton);
+
 
 	gui.loadFromXML();
 
@@ -52,21 +55,25 @@ void testApp::setup(){
 //--------------------------------------------------------------
 void testApp::update(){
 
-    if(sendHelloButton) {
-		sendHelloButton = false;
-        tcpClient.send("hello");
+    if(sendResetButton) {
+		sendResetButton = false;
+        tcpClient.send("RESET");
     }
 
     if(sendNewVisitorButton) {
 		sendNewVisitorButton = false;
-        tcpClient.send("new visitor");
+        tcpClient.send("RECORD: 00000000, 70.3, 140");
     }
 
     if(sendStatusButton) {
 		sendStatusButton = false;
-        tcpClient.send("status");
+        tcpClient.send("STATUS");
     }
 
+    if(sendSetInactivityButton) {
+		sendSetInactivityButton = false;
+        tcpClient.send("SET INACTIVITY 60");
+    }
 
 	ofBackground(230, 230, 230);
 

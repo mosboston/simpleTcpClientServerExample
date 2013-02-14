@@ -68,8 +68,14 @@ void testApp::draw(){
 			storeText[i] = str;
 			cout << "just received something from client[" << i << "]: " << storeText[i] << endl;
 
-            // respond to client
-			TCP.send(i, "thanks client - received your msg: " + storeText[i] );
+            if (storeText[i].substr(0,6) == "RECORD"){
+                // respond to client
+                ofSleepMillis(1000);
+                TCP.send(i, "MEASUREMENT: Visitor ID, BMR, Step length, Walk speed, Calories, Number of grapes, Confidence, File Path" );
+            } else {
+                // respond to client
+                TCP.send(i, "thanks client - received your msg: " + storeText[i] );
+            }
 		}
 
 		//draw the info text and the received text bellow it
