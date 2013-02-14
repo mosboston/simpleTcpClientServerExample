@@ -10,6 +10,7 @@ bool	sendSetInactivityButton = false;
 
 float   visitorHeight, visitorWeight;
 
+int portNum = 21211;
 
 //--------------------------------------------------------------
 void testApp::setup(){
@@ -29,7 +30,7 @@ void testApp::setup(){
 
 	//are we connected to the server - if this fails we
 	//will check every few seconds to see if the server exists
-	weConnected = tcpClient.setup("127.0.0.1", 21211);
+	weConnected = tcpClient.setup("127.0.0.1", portNum);
 	//optionally set the delimiter to something else.  The delimter in the client and the server have to be the same
 	tcpClient.setMessageDelimiter("\n");
 	//tcpClient.setMessageDelimiter(";");
@@ -116,7 +117,7 @@ void testApp::update(){
 		deltaTime = ofGetElapsedTimeMillis() - connectTime;
 
 		if( deltaTime > 5000 ){
-			weConnected = tcpClient.setup("127.0.0.1", 11999);
+			weConnected = tcpClient.setup("127.0.0.1", portNum);
 			connectTime = ofGetElapsedTimeMillis();
 		}
 
