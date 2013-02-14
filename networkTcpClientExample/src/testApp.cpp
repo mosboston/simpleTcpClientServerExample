@@ -46,8 +46,8 @@ void testApp::setup(){
     gui.addButton("Send SET INACTIVITY", sendSetInactivityButton);
 
     gui.addTitle("Sensors").setNewColumn(true);
-    gui.addSlider("Height (inches)", visitorHeight, 1.0, 96.0);
-    gui.addSlider("Weight (pounds)", visitorWeight, 1.0, 1000.0);
+    gui.addSlider("Height in inches", visitorHeight, 1.0, 96.0);
+    gui.addSlider("Weight in pounds", visitorWeight, 1.0, 1000.0);
 
 
 	gui.loadFromXML();
@@ -68,7 +68,17 @@ void testApp::update(){
 
     if(sendNewVisitorButton) {
 		sendNewVisitorButton = false;
-        tcpClient.send("RECORD: 00000000, " + ofToString(visitorHeight) + ", " + ofToString(visitorWeight));
+
+		string randomVisitorID = ofToString(int(ofRandom(0,9.999))) +
+                                 ofToString(int(ofRandom(0,9.999))) +
+                                 ofToString(int(ofRandom(0,9.999))) +
+                                 ofToString(int(ofRandom(0,9.999))) +
+                                 ofToString(int(ofRandom(0,9.999))) +
+                                 ofToString(int(ofRandom(0,9.999))) +
+                                 ofToString(int(ofRandom(0,9.999))) +
+                                 ofToString(int(ofRandom(0,9.999)));
+
+        tcpClient.send("RECORD: " + randomVisitorID + ", " + ofToString(visitorHeight) + ", " + ofToString(visitorWeight));
     }
 
     if(sendStatusButton) {
