@@ -56,6 +56,9 @@ void testApp::setup(){
 
 	gui.show();
 
+    ofEnableAlphaBlending();
+	HHLlogo.loadImage("HHL_logo.png");
+
 }
 
 //--------------------------------------------------------------
@@ -122,6 +125,9 @@ void testApp::update(){
 
 //--------------------------------------------------------------
 void testApp::draw(){
+
+    ofSetColor(255);
+    HHLlogo.draw( ofGetWindowWidth() - HHLlogo.getWidth() - 20, ofGetWindowHeight() - HHLlogo.getHeight() - 20 );
 
 	ofSetColor(20, 20, 20);
 	ofDrawBitmapString("openFrameworks TCP Send Example", 15, 30+101);

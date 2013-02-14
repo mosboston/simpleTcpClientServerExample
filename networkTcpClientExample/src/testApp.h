@@ -21,6 +21,8 @@ class testApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
+        ofImage HHLlogo;
+
 		ofxTCPClient tcpClient;
 		string msgTx, msgRx;
 
