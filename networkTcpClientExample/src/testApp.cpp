@@ -8,6 +8,8 @@ bool	sendNewVisitorButton = false;
 bool	sendStatusButton = false;
 bool	sendSetInactivityButton = false;
 
+float   visitorHeight, visitorWeight;
+
 
 //--------------------------------------------------------------
 void testApp::setup(){
@@ -27,7 +29,7 @@ void testApp::setup(){
 
 	//are we connected to the server - if this fails we
 	//will check every few seconds to see if the server exists
-	weConnected = tcpClient.setup("127.0.0.1", 11999);
+	weConnected = tcpClient.setup("127.0.0.1", 21211);
 	//optionally set the delimiter to something else.  The delimter in the client and the server have to be the same
 	tcpClient.setMessageDelimiter("\n");
 	//tcpClient.setMessageDelimiter(";");
@@ -37,11 +39,15 @@ void testApp::setup(){
 
 	tcpClient.setVerbose(true);
 
-
+    gui.addTitle("Send messages");
 	gui.addButton("Send RESET", sendResetButton);
 	gui.addButton("Send RECORD", sendNewVisitorButton);
 	gui.addButton("Send STATUS", sendStatusButton);
     gui.addButton("Send SET INACTIVITY", sendSetInactivityButton);
+
+    gui.addTitle("Sensors").setNewColumn(true);
+    gui.addSlider("Height (inches)", visitorHeight, 1.0, 96.0);
+    gui.addSlider("Weight (pounds)", visitorWeight, 1.0, 1000.0);
 
 
 	gui.loadFromXML();
@@ -62,7 +68,7 @@ void testApp::update(){
 
     if(sendNewVisitorButton) {
 		sendNewVisitorButton = false;
-        tcpClient.send("RECORD: 00000000, 70.3, 140");
+        tcpClient.send("RECORD: 00000000, " + ofToString(visitorHeight) + ", " + ofToString(visitorWeight));
     }
 
     if(sendStatusButton) {
