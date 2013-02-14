@@ -66,12 +66,12 @@ void testApp::draw(){
 
 		if(str.length() > 0){
 			storeText[i] = str;
-			cout << "just received something from client[" << i << "]: " << storeText[i] << endl;
+			cout << "just received a command from client[" << i << "]: " << storeText[i] << endl;
 
             if (storeText[i].substr(0,6) == "RECORD"){
                 // respond to client
                 ofSleepMillis(1000);
-                TCP.send(i, "MEASUREMENT: Visitor ID, BMR, Step length, Walk speed, Calories, Number of grapes, Confidence, File Path" );
+                TCP.send(i, "MEASUREMENT: Visitor ID, Basal Metabolic Rate, Step length, Walk speed, Calories, Number of grapes, Confidence, File Path" );
             } else {
                 // respond to client
                 TCP.send(i, "thanks client - received your msg: " + storeText[i] );
