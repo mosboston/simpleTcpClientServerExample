@@ -9,11 +9,27 @@ bool	sendStatusButton = false;
 bool	sendSetInactivityButton = false;
 
 float   visitorHeight, visitorWeight;
-
 int portNum = 21211;
+string ipString = "127.0.0.1";
 
 //--------------------------------------------------------------
 void testApp::setup(){
+
+    // xml connection settings
+    ofxXmlSettings					connectionXML;
+
+    if(connectionXML.loadFile("connection.xml")) {
+        // load IP first
+        ipString = connectionXML.getValue("ip","127.0.0.1");
+        cout << "ip from xml: " << ipString << endl;
+
+        // port number
+        portNum = connectionXML.getValue("port", 21211);
+        cout << "port from connection.xml: " << portNum << endl;
+    }
+    // done loading connection xml!
+
+
 	// we don't want to be running too fast
 	ofSetVerticalSync(true);
 
@@ -30,10 +46,11 @@ void testApp::setup(){
 
 	//are we connected to the server - if this fails we
 	//will check every few seconds to see if the server exists
-	weConnected = tcpClient.setup("127.0.0.1", portNum);
+
+	weConnected = tcpClient.setup(ipString, portNum); // server
+
 	//optionally set the delimiter to something else.  The delimter in the client and the server have to be the same
 	tcpClient.setMessageDelimiter("\n");
-	//tcpClient.setMessageDelimiter(";");
 
 	connectTime = 0;
 	deltaTime = 0;
@@ -59,7 +76,6 @@ void testApp::setup(){
 
     ofEnableAlphaBlending();
 	HHLlogo.loadImage("HHL_logo.png");
-
 }
 
 //--------------------------------------------------------------
@@ -73,14 +89,7 @@ void testApp::update(){
     if(sendNewVisitorButton) {
 		sendNewVisitorButton = false;
 
-		string randomVisitorID = ofToString(int(ofRandom(0,9.999))) +
-                                 ofToString(int(ofRandom(0,9.999))) +
-                                 ofToString(int(ofRandom(0,9.999))) +
-                                 ofToString(int(ofRandom(0,9.999))) +
-                                 ofToString(int(ofRandom(0,9.999))) +
-                                 ofToString(int(ofRandom(0,9.999))) +
-                                 ofToString(int(ofRandom(0,9.999))) +
-                                 ofToString(int(ofRandom(0,9.999)));
+		string randomVisitorID = ofToString(int(ofRandom(0,99999999)));
 
         tcpClient.send("RECORD: " + randomVisitorID + ", " + ofToString(visitorHeight) + ", " + ofToString(visitorWeight));
     }
@@ -95,7 +104,7 @@ void testApp::update(){
         tcpClient.send("SET INACTIVITY 60");
     }
 
-	ofBackground(230, 230, 230);
+	ofBackground(230, 227, 230);
 
 	//we are connected - lets send our text and check what we get back
 	if(weConnected){//}&& msgTx.at(msgTx.length()) == ';'){
@@ -107,7 +116,7 @@ void testApp::update(){
 			string str = tcpClient.receive();
 			if( str.length() > 0 ){
 				msgRx = str;
-                //cout << "updated msgRx from server: " << msgRx << endl;
+                cout << "updated msgRx from server: " << msgRx << endl;
 			}
 		}else if(!tcpClient.isConnected()){
 			weConnected = false;
@@ -117,7 +126,7 @@ void testApp::update(){
 		deltaTime = ofGetElapsedTimeMillis() - connectTime;
 
 		if( deltaTime > 5000 ){
-			weConnected = tcpClient.setup("127.0.0.1", portNum);
+			weConnected = tcpClient.setup(ipString, portNum);
 			connectTime = ofGetElapsedTimeMillis();
 		}
 
@@ -138,7 +147,7 @@ void testApp::draw(){
 		ofDrawBitmapString(msgTx, 85, 55+101);
 	}
 	else{
-		if(weConnected)ofDrawBitmapString("status: type something to send data to port 11999", 15, 55+101);
+		if(weConnected)ofDrawBitmapString("status: type something to send data to \nip: " + ipString + " port: " + ofToString( portNum ), 15, 55+101);
 		else ofDrawBitmapString("status: server not found. launch server app and check ports!\n\nreconnecting in "+ofToString( (5000 - deltaTime) / 1000 )+" seconds", 15, 55+101);
 	}
 
