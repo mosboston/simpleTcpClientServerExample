@@ -35,7 +35,7 @@ void testApp::setup(){
 
 	//some variables:
 	//have we typed
-	typed	= false;
+	//typed	= false;
 
 	//our typing position
 	pos		= 0;
@@ -83,7 +83,7 @@ void testApp::update(){
 
     if(sendResetButton) {
 		sendResetButton = false;
-        tcpClient.send("RESET");
+        msgTx = "RESET";
     }
 
     if(sendNewVisitorButton) {
@@ -91,36 +91,44 @@ void testApp::update(){
 
 		string randomVisitorID = ofToString(int(ofRandom(0,99999999)));
 
-        tcpClient.send("RECORD: " + randomVisitorID + ", " + ofToString(visitorHeight) + ", " + ofToString(visitorWeight));
+        msgTx = "RECORD: " + randomVisitorID + ", " + ofToString(visitorHeight) + ", " + ofToString(visitorWeight);
     }
 
     if(sendStatusButton) {
 		sendStatusButton = false;
-        tcpClient.send("STATUS");
+        msgTx = "STATUS";
     }
 
     if(sendSetInactivityButton) {
 		sendSetInactivityButton = false;
-        tcpClient.send("SET INACTIVITY 60");
+        msgTx = "SET INACTIVITY 60";
     }
 
 	ofBackground(230, 227, 230);
 
-	//we are connected - lets send our text and check what we get back
-	if(weConnected){//}&& msgTx.at(msgTx.length()) == ';'){
-        //cout << "found a semicolon in msg i'm sending server" << endl;
-		if(tcpClient.send(msgTx)){
+	//we are connected - lets send our text if delimeter present and check what we get back
+	if(weConnected){
+		if( msgTx.length() > 0 && tcpClient.send(msgTx)){ // ONLY SEND IF MESSAGE LENGTH > 0
+            cout << "message sent to server, clearing" << endl;
+
             msgTx = "";
 
-			//if data has been sent lets update our text
-			string str = tcpClient.receive();
-			if( str.length() > 0 ){
-				msgRx = str;
-                cout << "updated msgRx from server: " << msgRx << endl;
-			}
+//			//if data has been sent lets update our text
+//			string str = tcpClient.receive();
+//			if( str.length() > 0 ){
+//				msgRx = str;
+//                cout << "updated msgRx from server: " << msgRx << endl;
+//			}
 		}else if(!tcpClient.isConnected()){
 			weConnected = false;
 		}
+
+		//we're connected, lets update our text
+        string str = tcpClient.receive(); // ALWAYS RECEIVE IF CONNECTED
+        if( str.length() > 0 ){
+            msgRx = str;
+            cout << "latest msgRx from server: " << msgRx << endl;
+        }
 	}else{
 		//if we are not connected lets try and reconnect every 5 seconds
 		deltaTime = ofGetElapsedTimeMillis() - connectTime;
@@ -142,14 +150,16 @@ void testApp::draw(){
 	ofSetColor(20, 20, 20);
 	ofDrawBitmapString("openFrameworks TCP Send Example", 15, 30+101);
 
-	if(typed){
-		ofDrawBitmapString("sending:", 15, 55+101);
-		ofDrawBitmapString(msgTx, 85, 55+101);
-	}
-	else{
-		if(weConnected)ofDrawBitmapString("status: type something to send data to \nip: " + ipString + " port: " + ofToString( portNum ), 15, 55+101);
-		else ofDrawBitmapString("status: server not found. launch server app and check ports!\n\nreconnecting in "+ofToString( (5000 - deltaTime) / 1000 )+" seconds", 15, 55+101);
-	}
+//	if(typed){
+//		ofDrawBitmapString("sending:", 15, 55+101);
+//		ofDrawBitmapString(msgTx, 85, 55+101);
+//	}
+//	else{
+		if(weConnected)
+            ofDrawBitmapString("status: click something to send data to \nip: " + ipString + " port: " + ofToString( portNum ), 15, 55+101);
+		else
+            ofDrawBitmapString("status: server not found. launch server app and check ports!\n\nreconnecting in "+ofToString( (5000 - deltaTime) / 1000 )+" seconds", 15, 55+101);
+//	}
 
 	ofDrawBitmapString("from server: \n"+msgRx, 15, 130+101);
 
@@ -161,18 +171,18 @@ void testApp::draw(){
 void testApp::keyPressed(int key){
 
 	//you can only type if you're connected
-	if(weConnected){
-		if(key == 13)key = '\n'; // CR
-		if(key == 8 || key == 127){ // BS or DEL
-			if( pos != 0 ){pos--;
-				msgTx = msgTx.substr(0,pos);
-			}else msgTx = "";
-		}else{
-			msgTx.append(1, (char) key);
-			pos++;
-		}
-		typed = true;
-	}
+//	if(weConnected){
+//		if(key == 13)key = '\n'; // CR
+//		if(key == 8 || key == 127){ // BS or DEL
+//			if( pos != 0 ){pos--;
+//				msgTx = msgTx.substr(0,pos);
+//			}else msgTx = "";
+//		}else{
+//			msgTx.append(1, (char) key);
+//			pos++;
+//		}
+//		typed = true;
+//	}
 }
 
 //--------------------------------------------------------------
